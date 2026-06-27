@@ -1,270 +1,313 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For Prakriti</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Great+Vibes&family=Montserrat:wght@300&display=swap');
 
-        :root {
-            --rose-light: #ff99cc;
-            --rose-mid: #ff4d94;
-            --rose-dark: #cc0052;
-            --bg-color: #050005;
-        }
 
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-color);
-            color: #ffe6f0;
-            font-family: 'Montserrat', sans-serif;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Great+Vibes&display=swap');
 
-        /* --- Twinkling Stars Background --- */
-        .stars {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-        .star {
-            position: absolute;
-            background-color: #fff;
-            border-radius: 50%;
-            box-shadow: 0 0 5px #fff, 0 0 10px #ff99cc;
-            animation: twinkle infinite ease-in-out;
-        }
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.1; transform: scale(0.8); }
-            50% { opacity: 0.8; transform: scale(1.2); }
-        }
+  *{margin:0;padding:0;box-sizing:border-box}
 
-        /* --- Blooming Pink Rose --- */
-        .rose-container {
-            margin-top: 8vh;
-            width: 120px;
-            height: 120px;
-            position: relative;
-            z-index: 2;
-            animation: float 6s ease-in-out infinite;
-            filter: drop-shadow(0 0 20px rgba(255, 77, 148, 0.4));
-        }
+  #scene{
+    width:100%;
+    min-height:100svh;
+    background:radial-gradient(ellipse at 50% 30%,#1a0010 0%,#0d0008 50%,#050005 100%);
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
 
-        .petal {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--rose-light), var(--rose-dark));
-            border-radius: 2px 50px 2px 50px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
-            opacity: 0;
-            transform-origin: bottom right;
-            top: 0;
-            left: 0;
-        }
+  canvas#starsCanvas{
+    position:absolute;top:0;left:0;
+    width:100%;height:100%;
+    pointer-events:none;z-index:1;
+  }
 
-        /* Outer Petals */
-        .petal.outer { animation: bloom 3s ease-out forwards; }
-        /* Middle Petals */
-        .petal.middle { width: 45px; height: 45px; top: 15px; left: 15px; background: linear-gradient(135deg, var(--rose-mid), var(--rose-dark)); animation: bloom 3s ease-out 1.5s forwards; }
-        /* Inner Petals */
-        .petal.inner { width: 30px; height: 30px; top: 30px; left: 30px; background: linear-gradient(135deg, #ffb3d9, var(--rose-mid)); animation: bloom 3s ease-out 3s forwards; }
+  #roseWrap{
+    position:relative;z-index:5;
+    margin-top:clamp(16px,4vw,32px);
+    width:clamp(140px,45vw,200px);
+    height:clamp(140px,45vw,200px);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
 
-        @keyframes bloom {
-            0% { transform: rotate(var(--rot)) scale(0); opacity: 0; }
-            100% { transform: rotate(var(--rot)) scale(1); opacity: 0.85; }
-        }
+  #roseGlow{
+    position:absolute;
+    width:80%;height:80%;
+    border-radius:50%;
+    background:radial-gradient(circle,rgba(255,100,150,0.18) 0%,transparent 70%);
+    animation:glowPulse 3s ease-in-out infinite;
+    pointer-events:none;
+  }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
+  @keyframes glowPulse{
+    0%,100%{transform:scale(1);opacity:0.7}
+    50%{transform:scale(1.15);opacity:1}
+  }
 
-        /* --- Title: Prakriti --- */
-        .name-title {
-            font-family: 'Great Vibes', cursive;
-            font-size: 4.5rem;
-            color: var(--rose-light);
-            margin-top: 25px;
-            margin-bottom: 10px;
-            z-index: 2;
-            opacity: 0;
-            animation: fadeIn 3s ease-in-out 4s forwards;
-            text-shadow: 0 0 15px rgba(255, 153, 204, 0.6);
-        }
+  #roseSVG{
+    width:100%;height:100%;
+    filter:drop-shadow(0 0 14px rgba(255,100,130,0.55));
+    animation:roseBloom 2.4s cubic-bezier(0.22,1,0.36,1) forwards;
+    transform-origin:50% 100%;
+    transform:scale(0) translateY(30px);
+  }
 
-        /* --- Slowly Scrolling Poem --- */
-        .poem-wrapper {
-            position: relative;
-            flex-grow: 1;
-            width: 100%;
-            max-width: 650px;
-            z-index: 2;
-            overflow: hidden;
-            /* Creates a fading effect at the top and bottom so text disappears smoothly */
-            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
-            mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
-            opacity: 0;
-            animation: fadeIn 3s ease-in-out 5s forwards;
-        }
+  @keyframes roseBloom{
+    0%{transform:scale(0) translateY(30px);opacity:0}
+    60%{transform:scale(1.08) translateY(-4px);opacity:1}
+    80%{transform:scale(0.97) translateY(2px)}
+    100%{transform:scale(1) translateY(0);opacity:1}
+  }
 
-        .poem-content {
-            position: absolute;
-            width: 100%;
-            text-align: center;
-            font-family: 'Cinzel', serif;
-            font-size: 1.25rem;
-            line-height: 2.4;
-            letter-spacing: 1.5px;
-            top: 100%;
-            /* 45 seconds ensures a very slow, romantic reading pace */
-            animation: scrollUp 45s linear infinite;
-        }
+  #nameTitle{
+    font-family:'Great Vibes',cursive;
+    color:#ffb3cc;
+    font-size:clamp(1.6rem,6vw,2.4rem);
+    letter-spacing:3px;
+    text-shadow:0 0 18px rgba(255,160,190,0.7),0 0 40px rgba(255,100,130,0.3);
+    z-index:5;
+    margin-top:-4px;
+    animation:fadeInName 1.2s 1.8s ease both;
+    opacity:0;
+    flex-shrink:0;
+  }
 
-        @keyframes scrollUp {
-            0% { top: 100%; }
-            100% { top: -250%; }
-        }
+  @keyframes fadeInName{
+    from{opacity:0;transform:translateY(10px)}
+    to{opacity:1;transform:translateY(0)}
+  }
 
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
+  #poemContainer{
+    position:relative;z-index:5;
+    width:min(480px,92%);
+    flex:1;
+    min-height:0;
+    height:clamp(220px,45vh,320px);
+    overflow:hidden;
+    margin-top:clamp(10px,2.5vw,18px);
+    margin-bottom:clamp(16px,4vw,28px);
+    mask-image:linear-gradient(to bottom,transparent 0%,black 14%,black 86%,transparent 100%);
+    -webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 14%,black 86%,transparent 100%);
+  }
 
-        @media (max-width: 600px) {
-            .name-title { font-size: 3.5rem; }
-            .poem-content { font-size: 1.1rem; padding: 0 20px; }
-        }
-    </style>
-</head>
-<body>
+  #poemScroll{
+    display:flex;flex-direction:column;align-items:center;
+    padding:220px 0;
+    animation:scrollPoem 68s 2.6s linear forwards;
+  }
 
-    <!-- Generates a romantic starry sky -->
-    <div class="stars" id="stars"></div>
+  @keyframes scrollPoem{
+    from{transform:translateY(0)}
+    to{transform:translateY(-100%)}
+  }
 
-    <!-- The Blooming Pink Rose (Pure CSS) -->
-    <div class="rose-container" id="rose">
-        <!-- Outer Layer -->
-        <div class="petal outer" style="--rot: 0deg;"></div>
-        <div class="petal outer" style="--rot: 45deg;"></div>
-        <div class="petal outer" style="--rot: 90deg;"></div>
-        <div class="petal outer" style="--rot: 135deg;"></div>
-        <div class="petal outer" style="--rot: 180deg;"></div>
-        <div class="petal outer" style="--rot: 225deg;"></div>
-        <div class="petal outer" style="--rot: 270deg;"></div>
-        <div class="petal outer" style="--rot: 315deg;"></div>
-        
-        <!-- Middle Layer -->
-        <div class="petal middle" style="--rot: 22.5deg;"></div>
-        <div class="petal middle" style="--rot: 67.5deg;"></div>
-        <div class="petal middle" style="--rot: 112.5deg;"></div>
-        <div class="petal middle" style="--rot: 157.5deg;"></div>
-        <div class="petal middle" style="--rot: 202.5deg;"></div>
-        <div class="petal middle" style="--rot: 247.5deg;"></div>
-        <div class="petal middle" style="--rot: 292.5deg;"></div>
-        <div class="petal middle" style="--rot: 337.5deg;"></div>
+  .pLine{
+    font-family:'Cormorant Garamond',Georgia,serif;
+    font-size:clamp(0.88rem,3.2vw,1.05rem);
+    font-weight:300;
+    color:rgba(255,220,235,0.88);
+    line-height:1.85;
+    text-align:center;
+    letter-spacing:0.4px;
+    padding:0 clamp(12px,4vw,20px);
+  }
 
-        <!-- Inner Layer -->
-        <div class="petal inner" style="--rot: 10deg;"></div>
-        <div class="petal inner" style="--rot: 55deg;"></div>
-        <div class="petal inner" style="--rot: 100deg;"></div>
-        <div class="petal inner" style="--rot: 145deg;"></div>
-        <div class="petal inner" style="--rot: 190deg;"></div>
-        <div class="petal inner" style="--rot: 235deg;"></div>
-        <div class="petal inner" style="--rot: 280deg;"></div>
-        <div class="petal inner" style="--rot: 325deg;"></div>
+  .pLine.italic{font-style:italic}
+  .pLine.big{
+    font-size:clamp(1rem,4vw,1.22rem);
+    color:#ffb3cc;
+    font-weight:400;
+    text-shadow:0 0 10px rgba(255,150,180,0.4);
+    margin:4px 0;
+  }
+  .pLine.gap{height:clamp(14px,3vw,22px)}
+
+  #petals{
+    position:absolute;top:0;left:0;
+    width:100%;height:100%;
+    pointer-events:none;z-index:3;overflow:hidden;
+  }
+
+  .petal{
+    position:absolute;
+    width:clamp(7px,2vw,10px);height:clamp(9px,2.8vw,14px);
+    background:radial-gradient(ellipse at 40% 35%,#ffb3cc 0%,#e05080 60%,#a02040 100%);
+    border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+    opacity:0;
+    animation:petalFall linear infinite;
+  }
+
+  @keyframes petalFall{
+    0%{opacity:0;transform:translateY(-20px) rotate(0deg) scale(0.8)}
+    10%{opacity:0.85}
+    90%{opacity:0.6}
+    100%{opacity:0;transform:translateY(105vh) rotate(360deg) scale(1.1)}
+  }
+</style>
+
+<div id="scene">
+  <canvas id="starsCanvas"></canvas>
+  <div id="petals"></div>
+
+  <div id="roseWrap">
+    <div id="roseGlow"></div>
+    <svg id="roseSVG" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <path d="M100 190 Q97 160 98 130" stroke="#2d7a3a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <path d="M98 155 Q80 142 72 128 Q88 132 98 148" fill="#2a6e35" opacity="0.85"/>
+      <path d="M98 148 Q118 138 122 122 Q108 128 98 145" fill="#2a6e35" opacity="0.7"/>
+      <ellipse cx="100" cy="112" rx="18" ry="10" fill="#8b1a35" transform="rotate(-30 100 112)" opacity="0.9"/>
+      <ellipse cx="100" cy="112" rx="18" ry="10" fill="#8b1a35" transform="rotate(30 100 112)" opacity="0.9"/>
+      <ellipse cx="100" cy="112" rx="16" ry="10" fill="#9b2040" transform="rotate(90 100 112)" opacity="0.85"/>
+      <ellipse cx="100" cy="112" rx="16" ry="10" fill="#9b2040" transform="rotate(-90 100 112)" opacity="0.85"/>
+      <ellipse cx="100" cy="112" rx="17" ry="10" fill="#8b1a35" transform="rotate(0 100 112)" opacity="0.9"/>
+      <ellipse cx="100" cy="112" rx="17" ry="10" fill="#8b1a35" transform="rotate(180 100 112)" opacity="0.9"/>
+      <ellipse cx="100" cy="107" rx="14" ry="9" fill="#c0384a" transform="rotate(-20 100 107)" opacity="0.9"/>
+      <ellipse cx="100" cy="107" rx="14" ry="9" fill="#c0384a" transform="rotate(20 100 107)" opacity="0.9"/>
+      <ellipse cx="100" cy="107" rx="14" ry="9" fill="#b83045" transform="rotate(70 100 107)" opacity="0.9"/>
+      <ellipse cx="100" cy="107" rx="14" ry="9" fill="#b83045" transform="rotate(-70 100 107)" opacity="0.9"/>
+      <ellipse cx="100" cy="107" rx="13" ry="9" fill="#c0384a" transform="rotate(130 100 107)" opacity="0.9"/>
+      <ellipse cx="100" cy="103" rx="11" ry="7.5" fill="#e05070" transform="rotate(-15 100 103)" opacity="0.92"/>
+      <ellipse cx="100" cy="103" rx="11" ry="7.5" fill="#e05070" transform="rotate(35 100 103)" opacity="0.92"/>
+      <ellipse cx="100" cy="103" rx="10" ry="7" fill="#d84060" transform="rotate(90 100 103)" opacity="0.92"/>
+      <ellipse cx="100" cy="103" rx="10" ry="7" fill="#d84060" transform="rotate(-60 100 103)" opacity="0.92"/>
+      <ellipse cx="100" cy="103" rx="10" ry="7" fill="#d84060" transform="rotate(150 100 103)" opacity="0.9"/>
+      <ellipse cx="100" cy="99" rx="8" ry="5.5" fill="#f08098" transform="rotate(10 100 99)" opacity="0.95"/>
+      <ellipse cx="100" cy="99" rx="8" ry="5.5" fill="#f08098" transform="rotate(-40 100 99)" opacity="0.95"/>
+      <ellipse cx="100" cy="99" rx="7" ry="5" fill="#f090a8" transform="rotate(80 100 99)" opacity="0.95"/>
+      <ellipse cx="100" cy="99" rx="7" ry="5" fill="#e870a0" transform="rotate(-100 100 99)" opacity="0.95"/>
+      <ellipse cx="100" cy="97" rx="5" ry="4" fill="#fbacc0" opacity="1"/>
+      <ellipse cx="100" cy="96" rx="3" ry="2.5" fill="#ffd0e0" opacity="0.95"/>
+      <path d="M96 128 Q93 118 96 112" stroke="#2a6e35" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.8"/>
+      <path d="M104 128 Q107 118 104 112" stroke="#2a6e35" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.8"/>
+    </svg>
+  </div>
+
+  <div id="nameTitle">Prikriti</div>
+
+  <div id="poemContainer">
+    <div id="poemScroll">
+      <div class="pLine big">She. Her.</div>
+      <div class="pLine gap"></div>
+      <div class="pLine">I love how she blinks,</div>
+      <div class="pLine">I love how she smiles.</div>
+      <div class="pLine italic">Her eyes, Her lips.</div>
+      <div class="pLine gap"></div>
+      <div class="pLine">Never heard her voice,</div>
+      <div class="pLine">Yet I know what her eyes say.</div>
+      <div class="pLine gap"></div>
+      <div class="pLine italic">Tears,</div>
+      <div class="pLine">They shine brighter than diamonds.</div>
+      <div class="pLine">But she is more than a diamond.</div>
+      <div class="pLine gap"></div>
+      <div class="pLine">I know her eyes, but not her thoughts.</div>
+      <div class="pLine">I know her tears, but not her pain,</div>
+      <div class="pLine">never held her hands,</div>
+      <div class="pLine">never felt her touch,</div>
+      <div class="pLine">but my heart knew,</div>
+      <div class="pLine italic">what my mind never could..</div>
+      <div class="pLine gap"></div>
+      <div class="pLine">Does she know?</div>
+      <div class="pLine">Does she feel?</div>
+      <div class="pLine gap"></div>
+      <div class="pLine">On those thousand faces,</div>
+      <div class="pLine">my eyes search only of her.</div>
+      <div class="pLine gap"></div>
+      <div class="pLine italic">A stranger, yet so close.</div>
+      <div class="pLine gap"></div>
+      <div class="pLine">Never knew I had so much love,</div>
+      <div class="pLine">that my heart could never express it all.</div>
+      <div class="pLine gap"></div>
+      <div class="pLine">Words failed me,</div>
+      <div class="pLine">wish my silence could speak thousands of lines,</div>
+      <div class="pLine">yet too less to express,</div>
+      <div class="pLine">yet too less to adore,</div>
+      <div class="pLine gap"></div>
+      <div class="pLine">She will never know,</div>
+      <div class="pLine">She will never see my love,</div>
+      <div class="pLine">my devotion,</div>
+      <div class="pLine">how she touched my lonely heart,</div>
+      <div class="pLine">how she gave me a reason to live.</div>
+      <div class="pLine gap"></div>
+      <div class="pLine big italic">She. Her.</div>
+      <div class="pLine gap"></div>
+      <div class="pLine">She is like the moon,</div>
+      <div class="pLine">far, yet close.</div>
+      <div class="pLine">No, more than the moon,</div>
+      <div class="pLine">for the moon seems dim</div>
+      <div class="pLine">whenever she stands beside it.</div>
+      <div class="pLine gap"></div>
+      <div class="pLine italic">So let universe know,</div>
+      <div class="pLine italic">let heaven hear my voice —</div>
+      <div class="pLine gap"></div>
+      <div class="pLine">I love you not for a moment,</div>
+      <div class="pLine">not for a year,</div>
+      <div class="pLine">but with a heart that found its home in you.</div>
+      <div class="pLine gap"></div>
+      <div class="pLine big">And forever.</div>
+      <div class="pLine gap"></div>
+      <div class="pLine gap"></div>
     </div>
+  </div>
+</div>
 
-    <!-- Her Name -->
-    <div class="name-title">Prakriti</div>
+<script>
+const canvas = document.getElementById('starsCanvas');
+const ctx = canvas.getContext('2d');
+const scene = document.getElementById('scene');
 
-    <!-- The Scrolling Poem -->
-    <div class="poem-wrapper">
-        <div class="poem-content">
-            She.<br>
-            Her.<br>
-            I love how she blinks,<br>
-            I love how she smiles.<br>
-            Her eyes,<br>
-            Her lips.<br>
-            Never heard her voice,<br>
-            Yet I know what her eyes say.<br>
-            Tears,<br>
-            They shine brighter than diamonds.<br>
-            But she is more than a diamond.<br>
-            I know her eyes,<br>
-            but not her thoughts.<br>
-            I know her tears,<br>
-            but not her pain,<br>
-            never held her hands,<br>
-            never felt her touch,<br>
-            but my heart knew,<br>
-            what my mind never could..<br>
-            Does she knows?<br>
-            Does she feel?<br>
-            On those thousand faces,<br>
-            my eyes search only of her.<br>
-            A stranger,<br>
-            yet so close.<br>
-            Never knew I had so much love,<br>
-            that my heart could never express it all.<br>
-            Words failed me,<br>
-            wish my silence could speak<br>
-            thousands of lines,<br>
-            yet too less to express,<br>
-            yet too less to adore,<br>
-            She will never know,<br>
-            She will never see<br>
-            my love,<br>
-            my devotion,<br>
-            how she touched my lonely heart,<br>
-            how she gave me a reason to live.<br>
-            She,<br>
-            Her.<br>
-            She is like the moon,<br>
-            far, yet close.<br>
-            No, more than the moon,<br>
-            for the moon seems dim<br>
-            whenever she stands beside it.<br>
-            So let universe know,<br>
-            let haven hears my voice<br>
-            I love you<br>
-            not for a moment,<br>
-            not for a year,<br>
-            but with a heart<br>
-            that found its home in you.<br>
-            And forever.<br>
-        </div>
-    </div>
+function resize(){
+  canvas.width = scene.offsetWidth;
+  canvas.height = Math.max(scene.offsetHeight, window.innerHeight);
+}
+resize();
+window.addEventListener('resize',()=>{resize();});
 
-    <!-- JavaScript to render background stars -->
-    <script>
-        const starsContainer = document.getElementById('stars');
-        const starCount = 80;
+const stars=[];
+function initStars(){
+  stars.length=0;
+  const n = Math.min(110, Math.floor(canvas.width * canvas.height / 6000));
+  for(let i=0;i<n;i++){
+    stars.push({
+      x:Math.random()*canvas.width,
+      y:Math.random()*canvas.height,
+      r:Math.random()*1.1+0.2,
+      a:Math.random(),
+      speed:Math.random()*0.008+0.003,
+      phase:Math.random()*Math.PI*2
+    });
+  }
+}
+initStars();
 
-        for (let i = 0; i < starCount; i++) {
-            const star = document.createElement('div');
-            star.classList.add('star');
-            
-            // Randomize star sizes, positions, and animations
-            const size = Math.random() * 3 + 1;
-            star.style.width = size + 'px';
-            star.style.height = size + 'px';
-            star.style.left = Math.random() * 100 + 'vw';
-            star.style.top = Math.random() * 100 + 'vh';
-            star.style.animationDuration = (Math.random() * 4 + 2) + 's';
-            star.style.animationDelay = Math.random() * 5 + 's';
-            
-            starsContainer.appendChild(star);
-        }
-    </script>
-</body>
-</html>
+let frame=0;
+function drawStars(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  frame++;
+  for(const s of stars){
+    const alpha=s.a*(0.5+0.5*Math.sin(frame*s.speed+s.phase));
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,230,245,${alpha})`;
+    ctx.fill();
+  }
+  requestAnimationFrame(drawStars);
+}
+drawStars();
+
+const petalContainer=document.getElementById('petals');
+function spawnPetal(){
+  const p=document.createElement('div');
+  p.className='petal';
+  const x=Math.random()*100;
+  const dur=5+Math.random()*7;
+  const delay=Math.random()*3;
+  const rot=Math.random()*360;
+  const scale=0.6+Math.random()*0.8;
+  p.style.cssText=`left:${x}%;top:-20px;animation-duration:${dur}s;animation-delay:${delay}s;transform:rotate(${rot}deg) scale(${scale});`;
+  petalContainer.appendChild(p);
+  setTimeout(()=>p.remove(),(dur+delay)*1000+500);
+}
+for(let i=0;i<12;i++) spawnPetal();
+setInterval(spawnPetal,1200);
+</script>
